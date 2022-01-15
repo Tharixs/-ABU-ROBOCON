@@ -81,7 +81,7 @@ void Manual() {
         stick.data = 'Z';
         break;
       case 'G':
-        Slave.print('!');
+        Slave.print('#');
         stick.data = 'Z';
         break;
       /*PUTAR*/

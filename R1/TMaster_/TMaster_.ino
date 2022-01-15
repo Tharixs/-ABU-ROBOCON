@@ -1,4 +1,3 @@
-
 #define Gamepad Serial2
 #define Slave Serial1
 
@@ -125,8 +124,6 @@ bool heading = true;
 bool manual = false;
 char param;
 
-void (* reset) (void) = 0;
-
 void setup() {
   Gamepad.begin(9600);
   Slave.begin(9600);
@@ -136,7 +133,6 @@ void setup() {
   BKA.Time = millis();
   BKI.Time = millis();
   innt();
-  //  updateOdometry();
   Mode();
 }
 
@@ -150,8 +146,5 @@ void loop() {
   //    goXYT(0,0,45);
   //    trialOdometry();
   //    Serial.println(currentPOS.T);
-
-  //  Slave.print('F');
-  //  pd(maju);
 
 }

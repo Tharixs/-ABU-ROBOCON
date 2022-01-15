@@ -2,7 +2,6 @@ struct Param {
   int value;
 } cekHold;
 
-
 void logData() {
   if (Serial.available() > 0) {
     serial.data = Serial.read();
@@ -10,16 +9,15 @@ void logData() {
   if (Master.available() > 0) {
     master.data = Master.read();
   }
-  Serial.print(master.data);
 }
 
 void control() {
-  int Speed;
-
+  int SpeedDom, SpeedAmy;
   /*set awal hold ball*/
   holder(tahan);
   while (1) {
-    Speed = 100;
+    SpeedAmy = 200; //untuk menembak musuh
+    SpeedDom = 100; //untuk menembak Dom
     /*get data serial*/
     logData();
     /*Direction*/
@@ -28,7 +26,7 @@ void control() {
     /*holder*/
     if (master.data == 'F' && cekHold.value == 0) {
       holder(lepas);
-      delay(470);
+      delay(450);
       holder(tahan);
       cekHold.value = 1;
       master.data = 'Z';
@@ -42,7 +40,10 @@ void control() {
     }
     /*pelontar*/
     if (master.data == '!') {
-      motor(Speed);
+      motor(SpeedAmy);
+      master.data = 'Z';
+    } else  if (master.data == '#') {
+      motor(SpeedDom);
       master.data = 'Z';
     } else if (master.data == '@' || master.data == 'H') {
       motor(0);
@@ -63,10 +64,12 @@ void control() {
     //    Serial.print(Direction);
 
     /*Protection Speed*/
-    if (Speed > 255) {
-      Speed = 255;
-    } else if (Speed < 0) {
-      Speed = 255;
+    if (SpeedDom > 255 || SpeedAmy > 255) {
+       SpeedDom = 255;
+       SpeedAmy = 255;
+    } else if (SpeedDom < 0 || SpeedAmy < 0) {
+      SpeedDom = 255;
+      SpeedAmy = 255;
     }
   }
 }
@@ -87,7 +90,6 @@ void holder(int con) {
 }
 
 void motor(int s) {
-
   analogWrite(LKick_PWM_PIN, s);
   analogWrite(LKick_LPWM_PIN, LOW);
   analogWrite(RKick_PWM_PIN, s);

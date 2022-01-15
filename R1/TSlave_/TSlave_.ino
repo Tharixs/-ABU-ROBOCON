@@ -27,9 +27,6 @@ struct ENC_and_Motor
   int Speed;
 } ENC, Motor;
 
-
-void (* Reset) (void) = 0;
-
 int Direction;
 
 void setup() {
@@ -47,9 +44,9 @@ void setup() {
   control();
 }
 void loop() {
-  //    Serial.println(ENC.pulseCnt); //cek pulsa enc
+  //  Serial.println(ENC.pulseCnt); //cek pulsa enc
   //  logData();
   //  Serial.print(master.data);
-  //logData();
+  //  logData();
   //  Serial.print(Direction);
 }
