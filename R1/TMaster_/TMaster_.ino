@@ -1,15 +1,8 @@
 #include "Wire.h"
 
-// I2Cdev and ADXL345 must be installed as libraries, or else the .cpp/.h files
-// for both classes must be in the include path of your project
-#include "I2Cdev.h"
-#include "ADXL345.h"
-#include "L3G4200D.h"
-#include "BMP085.h"
-#include "HMC5883L.h"
-
 #define Gamepad Serial2
 #define Slave Serial3
+#define cmpSerial  Serial1
 
 /*Encoder*/
 #define BE_CH__A  23 // intt PIN
@@ -95,15 +88,6 @@
 #define LFAST_SPEED      60
 #define LVFAST_SPEED     190
 
-HMC5883L mag;
-int16_t mx, my, mz;
-
-ADXL345 accel;
-int16_t ax, ay, az;
-
-// gyro
-L3G4200D gyro;
-int16_t avx, avy, avz;
 
 struct ENC_and_Motor
 {
@@ -121,6 +105,14 @@ struct ENC {
   long int lastPulse;
 } BE, KA, KI;
 
+// Compass GY25
+struct cmps {
+  char buffer[50];
+  int
+  counter;
+  float heading;
+} cmps;
+
 struct POS {
   float
   X,
@@ -131,44 +123,31 @@ struct POS {
 
 struct JOY {
   char data;
+  char post;
 } stick, slave;
-
-struct CEK {
-  int cek = 0;
-} cast, info;
-
-struct Compas {
-  float heading;
-  float range;
-  float head;
-  float Direction;
-} cmps, pastCmps;
 
 bool turnRight = false;
 bool turnLeft = false;
 bool heading = true;
 bool manual = false;
 char param;
+int cek;
+float range;
 
 void setup() {
-  Wire.begin();
   Gamepad.begin(9600);
   Slave.begin(9600);
-  Serial.begin(9600);
-  mag.initialize();
-  accel.initialize();
-  gyro.initialize();
+  Serial.begin(115200);
+  cmpSerial.begin(115200);
 
   DKA.Time = millis();
   DKI.Time = millis();
   BKA.Time = millis();
   BKI.Time = millis();
   innt();
+  initCMPS();
   Mode();
   //  trialCMPS();
-  //  updateCMPS();
-
-  trialLastCmps();
 }
 
 void loop() {
@@ -186,5 +165,12 @@ void loop() {
   //  accelerometer();
   //  gyroscope();
   //  cekRange(-20);
+
+  //  updateOdometry();
+  //  updateCMPS();
+  //  setRPM(30, 30, 30, 30);
+  //  goXYT(10, 0, 35);
+
+
 
 }

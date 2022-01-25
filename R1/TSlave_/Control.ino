@@ -9,6 +9,7 @@ void logData() {
   if (Master.available() > 0) {
     master.data = Master.read();
   }
+
 }
 
 void control() {
@@ -17,7 +18,7 @@ void control() {
   holder(tahan);
   while (1) {
     SpeedAmy = 200; //untuk menembak musuh
-    SpeedDom = 255; //untuk menembak Dom
+    SpeedDom = 200; //untuk menembak Dom
     /*get data serial*/
     logData();
     /*Direction*/
@@ -39,13 +40,10 @@ void control() {
       master.data = 'Z';
     }
     /*pelontar*/
-    if (master.data == '!') {
-      motor(SpeedAmy);
-      master.data = 'Z';
-    } else  if (master.data == '#') {
+    if (master.data == '#') {
       motor(SpeedDom);
       master.data = 'Z';
-    } else if (master.data == '@' || master.data == 'H') {
+    } else if (master.data == 'H') {
       motor(0);
       master.data = 'Z';
     }
@@ -65,12 +63,13 @@ void control() {
 
     /*Protection Speed*/
     if (SpeedDom > 255 || SpeedAmy > 255) {
-       SpeedDom = 255;
-       SpeedAmy = 255;
+      SpeedDom = 255;
+      SpeedAmy = 255;
     } else if (SpeedDom < 0 || SpeedAmy < 0) {
       SpeedDom = 255;
       SpeedAmy = 255;
     }
+//    delay(20);
   }
 }
 

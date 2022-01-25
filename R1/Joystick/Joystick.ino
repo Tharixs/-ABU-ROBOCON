@@ -6,6 +6,8 @@ PS2X ps2x;
 
 byte vibrate = 0;
 int LY, LX, RY, RX, LYold, LXold, RYold, RXold;
+int ctrl = 0;
+
 
 void setup() {
 

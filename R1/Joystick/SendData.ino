@@ -39,7 +39,20 @@ void sendData() {
 
   if (ps2x.ButtonPressed(PSB_SQUARE))
   {
-    Master.print('E');
+    ctrl++;
+    if (ctrl == 1) {
+      Master.print('E');
+    }
+    if (ctrl == 2) {
+      Master.print('M');
+    }
+    if (ctrl == 3) {
+      Master.print('N');
+    }
+    if (ctrl == 4) {
+      Master.print('O');
+      ctrl = 0;
+    }
   }
   else if (ps2x.ButtonReleased(PSB_SQUARE))
   {
@@ -106,13 +119,14 @@ void sendData() {
 
   /*RESET*/
 
-   if (ps2x.ButtonPressed(PSB_START))
+  if (ps2x.ButtonPressed(PSB_START))
   {
     Master.print('0');
+    ctrl = 0;
   }
   else if (ps2x.ButtonReleased(PSB_START))
   {
-    Master.print('0');
+    Master.print('Z');
   }
 
 

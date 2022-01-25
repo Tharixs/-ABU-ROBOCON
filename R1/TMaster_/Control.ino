@@ -6,6 +6,7 @@ void logData() {
   if (Slave.available() > 0) {
     slave.data =  Slave.read();
   }
+  //  delay(20);
 }
 
 void Mode() {
@@ -17,113 +18,77 @@ void Mode() {
 
 void Heading(bool heading) {
   while (heading) {
-    int dir = 45;
     logData();
     updateOdometry();
     updateCMPS();
-    Serial.print(cmps.heading);
-    if (stick.data == 'E' && info.cek == 0 || pastCmps.heading > 360 ) {
-      pastCmps.heading = cmps.heading;
-      pastCmps.heading += dir;
-      pastCmps.range = pastCmps.heading;
-      cekRange(pastCmps.range);
-      turnRight = true;
-      Slave.print('@');
-      stick.data = 'Z';
-    }
-    else if (stick.data == 'E' && info.cek == 1) {
-      pastCmps.heading = cmps.heading;
-      pastCmps.heading -= dir;
-      pastCmps.range = pastCmps.heading;
-      cekRange(pastCmps.range);
-      Slave.print('!');
-      turnLeft = true;
-      stick.data = 'Z';
-    }
-
-    if (stick.data == 'E' && info.cek == 2 || pastCmps.heading < 0) {
-      pastCmps.heading = cmps.heading;
-      pastCmps.heading -= dir;
-      pastCmps.range = pastCmps.heading;
-      cekRange(pastCmps.range);
-      turnLeft = true;
-      Slave.print('@');
-      stick.data = 'Z';
-    }
-    else if (stick.data == 'E' && info.cek == 3) {
-      pastCmps.heading = cmps.heading;
-      pastCmps.heading += dir;
-      pastCmps.range = pastCmps.heading;
-      cekRange(pastCmps.range);
-      turnRight = true;
-      Slave.print('!');
-      stick.data = 'Z';
-    }
-    Serial.print("\t\t");
-    Serial.print(info.cek);
-    Serial.print("\t\t");
-    Serial.print(pastCmps.heading );
-    Serial.print("\t\t");
-    Serial.println(cmps.range);
-
-
-    if (stick.data == 'F') {
-      Slave.print('F');
-      stick.data = 'Z';
-    }
-
-    if (stick.data == 'L') {
-      heading = false;
-      manual = true;
-      stick.data = 'Z';
-    }
-    if (stick.data == 'H') {
-      Slave.print('H');
-      stick.data = 'Z';
-    }
-    else if (stick.data == 'K') {
-      heading = true;
-      manual = false;
-      stick.data = 'Z';
-    }
-
-    if (pastCmps.heading < 0) {
-    } else  if (cmps.heading == cmps.range) {
-      turnLeft = false;
-      info.cek = 3;
-      stick.data = 'Z';
-    }
-    else if (pastCmps.heading > 360) {
-      if (cmps.heading == cmps.range) {
-        turnRight = false;
-        info.cek = 1;
+    //    Serial.println(currentPOS.T);
+    param = stick.data;
+    switch (param) {
+      case 'A':
+        pd(maju);
+        break;
+      case 'B':
+        pd(mundur);
+        break;
+      case 'E':
+        turnRight = true;
+        stick.post = stick.data;
+        range = currentPOS.T - 45;
         stick.data = 'Z';
-      }
+        break;
+      case 'M':
+        turnLeft = true;
+        range = currentPOS.T + 45;
+        stick.post = stick.data;
+        stick.data = 'Z';
+        break;
+      case 'N':
+        turnLeft = true;
+        stick.post = stick.data;
+        range = currentPOS.T + 45;
+        stick.data = 'Z';
+        break;
+      case 'O':
+        turnRight = true;
+        stick.post = stick.data;
+        range = currentPOS.T - 45;
+        stick.data = 'Z';
+        break;
+      case 'G':
+        Slave.print('#');
+        stick.data = 'Z';
+        break;
+      case 'F':
+        Slave.print('F');
+        stick.data = 'Z';
+        break;
+      case 'L':
+        heading = false;
+        manual = true;
+        stick.data = 'Z';
+        break;
+      case 'H':
+        Slave.print('H');
+        stick.data = 'Z';
+        break;
+      case 'K':
+        heading = true;
+        manual = false;
+        stick.data = 'Z';
+        break;
+      case 'Z':
+        pd(berhenti);
+        break;
+      default:
+        break;
     }
-    else if (cmps.heading >= cmps.range && turnRight == true && info.cek == 0) {
-      turnRight = false;
-      info.cek = 1;
-      stick.data = 'Z';
-    }
-    else if (cmps.heading <= cmps.range  && turnLeft == true && info.cek == 1) {
-      turnLeft = false;
-      info.cek = 2;
-      stick.data = 'Z';
-    }
-
-    else if (cmps.heading <= cmps.range  && turnLeft == true && info.cek == 2) {
-      turnLeft = false;
-      info.cek = 3;
-      stick.data = 'Z';
-    }
-    else if (cmps.heading >= cmps.range  && turnLeft == false && info.cek == 3) {
-      turnRight = false;
-      info.cek = 0;
-      heading = false;
-      manual = true;
-      stick.data = 'Z';
-    }
+    //    Serial.print("\t\t");
+    //    Serial.print(cmps.range);
+    //    Serial.print("\t\t");
+    //    Serial.println(stick.data);
     getBall();
+    Range();
+    //    delay(20);
   }
 }
 
@@ -150,10 +115,10 @@ void Manual() {
         break;
       /*PUTAR*/
       case 'I':
-        putar(-100);
+        putar(-80);
         break;
       case 'J':
-        putar(100);
+        putar(80);
         break;
       /*HOLDER*/
       case 'F':
@@ -175,12 +140,9 @@ void Manual() {
         pd(berhenti);
         break;
       case '0':
-        cmps.range = 0;
-        info.cek = 0;
-        pastCmps.heading = 0;
-        BE.pulseCnt = 0;
-        KA.pulseCnt = 0;
-        KI.pulseCnt = 0;
+        initOdometry();
+        resetCMPS();
+        range = 0;
         Stop();
         break;
       default:
@@ -191,7 +153,7 @@ void Manual() {
 
 void getBall() {
 
-  float Speed = 100.0;
+  float Speed = 80.0;
   //  float FSpeed = FuzzyLinear(Speed);
   float FSpeed = FuzzyOmega(Speed);
 
@@ -254,17 +216,55 @@ void putar(int s) {
 }
 
 
+void updateCMPS() {
+  char tmp;
 
-void cekRange(float value) {
+  while (cmpSerial.available()) {
+    tmp = cmpSerial.read();
+    cmps.buffer[cmps.counter++] = tmp;
+    if (tmp == '\n') {
+      cmps.buffer[cmps.counter] = 0;
+      cmps.heading = atof(strtok(cmps.buffer + 5, ","));
+      cmps.counter = 0;
 
-  if (value > 360) {
-    cmps.range = value - 360;
-  } else if (value < 0) {
-    cmps.range = value + 360;
-  } else {
-    cmps.range = value;
+      if (cmps.heading > 180) {
+        cmps.heading -= 360;
+      }
+      if (cmps.heading < -180) {
+        cmps.heading += 360;
+      }
+    }
   }
+}
 
-  //  Serial.println(cmps.range);
+void Range() {
+  if (currentPOS.T <= range && stick.post == 'E') {
+    turnRight = false;
+  }
+  else if (currentPOS.T >= range && stick.post == 'M') {
+    turnLeft = false;
+  }
+  else if (currentPOS.T >= range && stick.post == 'N') {
+    turnLeft = false;
+  }
+  else if (currentPOS.T <= range && stick.post == 'O') {
+    turnRight = false;
+    heading = false;
+    manual = true;
+  }
+}
 
+void resetCMPS() {
+  cmpSerial.write(0xA5);
+  cmpSerial.write(0x55);
+  delay(100);
+  cmpSerial.write(0xA5);
+  cmpSerial.write(0x53);
+}
+
+void initCMPS() {
+  cmpSerial.write(0xA5);
+  cmpSerial.write(0x54);
+  delay(1000);
+  resetCMPS();
 }

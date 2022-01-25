@@ -132,39 +132,16 @@ void trialOdometry() {
     Serial.println(currentPOS.T);
   }
 }
-void updateCMPS() {
-  // read raw heading measurements from device
-  mag.getHeading(&mx, &my, &mz);
 
-  // display tab-separated gyro x/y/z values
-  //    Serial.print("mag:\t");
-  //  Serial.print(mx); Serial.print("\t");
-  //  Serial.print(my); Serial.print("\t");
-  //  Serial.print(mz); Serial.print("\t");
 
-  // To calculate heading in degrees. 0 degree indicates North
-  cmps.head = atan2(my, mx);
-  if (cmps.head < 0)
-    cmps.head  += 2 * M_PI;
-  cmps.heading = cmps.head * 180 / M_PI;
-  //  Serial.print("heading:\t");
-  //  Serial.println(cmps.heading);
-
-}
-
-void trialLastCmps() {
+void trialCMPS() {
   while (1) {
     updateCMPS();
-    pastCmps.heading = cmps.heading;
-
-    while (1) {
-      cmps.Direction =  pastCmps.heading;
-      Serial.print(cmps.heading);
-      Serial.print("\t\t");
-      Serial.print(pastCmps.heading);
-      Serial.print("\t\t");
-      Serial.println(cmps.Direction);
+    if (Serial.available()) {
+      Serial.read();
+      resetCMPS();
     }
+    Serial.println(cmps.heading);
+    delay(10);
   }
-
 }
