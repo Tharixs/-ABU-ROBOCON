@@ -6,6 +6,8 @@ void logData() {
   if (Slave.available() > 0) {
     slave.data =  Slave.read();
   }
+
+  Serial.println(stick.data);
   //  delay(20);
 }
 
@@ -19,9 +21,7 @@ void Mode() {
 void Heading(bool heading) {
   while (heading) {
     logData();
-    updateOdometry();
-    updateCMPS();
-    //    Serial.println(currentPOS.T);
+    //    updateOdometry();
     param = stick.data;
     switch (param) {
       case 'A':
@@ -31,28 +31,19 @@ void Heading(bool heading) {
         pd(mundur);
         break;
       case 'E':
-        turnRight = true;
-        stick.post = stick.data;
-        range = currentPOS.T - 45;
-        stick.data = 'Z';
+        goOdom(0, 0, -45);
         break;
       case 'M':
-        turnLeft = true;
-        range = currentPOS.T + 45;
-        stick.post = stick.data;
-        stick.data = 'Z';
+        odom  = true;
+        goOdom(0, 0, 0);
         break;
       case 'N':
-        turnLeft = true;
-        stick.post = stick.data;
-        range = currentPOS.T + 45;
-        stick.data = 'Z';
+        odom  = true;
+        goOdom(0, 0, 45);
         break;
       case 'O':
-        turnRight = true;
-        stick.post = stick.data;
-        range = currentPOS.T - 45;
-        stick.data = 'Z';
+        odom  = true;
+        goOdom(0, 0, 0);
         break;
       case 'G':
         Slave.print('#');
@@ -86,8 +77,6 @@ void Heading(bool heading) {
     //    Serial.print(cmps.range);
     //    Serial.print("\t\t");
     //    Serial.println(stick.data);
-    getBall();
-    Range();
     //    delay(20);
   }
 }
@@ -151,30 +140,11 @@ void Manual() {
   }
 }
 
-void getBall() {
-
-  float Speed = 80.0;
-  //  float FSpeed = FuzzyLinear(Speed);
-  float FSpeed = FuzzyOmega(Speed);
-
-  if (turnRight) {
-    RPM_DKI(-Speed, 0.01, 0.05);
-    RPM_BKI(-Speed, 0.01, 0.05);
-    RPM_BKA(-Speed, 0.01, 0.05);
-    RPM_DKA(-Speed, 0.01, 0.05);
-  }
-  if (turnLeft) {
-    RPM_DKI(Speed, 0.01, 0.05);
-    RPM_BKI(Speed, 0.01, 0.05);
-    RPM_BKA(Speed, 0.01, 0.05);
-    RPM_DKA(Speed, 0.01, 0.05);
-  }
-  if (turnLeft == false && turnRight == false) {
-    Stop();
-  }
-}
-
 void Stop() {
+  RPM_DKA(0, 0, 0); 
+  RPM_DKI(0, 0, 0); 
+  RPM_BKA(0, 0, 0); 
+  RPM_BKI(0, 0, 0); 
   analogWrite(DKA_Rpwm_PIN, LOW);
   analogWrite(DKA_Lpwm_PIN, LOW);
   analogWrite(DKI_Rpwm_PIN, LOW);
@@ -183,6 +153,8 @@ void Stop() {
   analogWrite(BKA_Lpwm_PIN, LOW);
   analogWrite(BKI_Rpwm_PIN, LOW);
   analogWrite(BKI_Lpwm_PIN, LOW);
+  DKA.pwm = BKA.pwm = BKI.pwm = DKI.pwm = 0;
+  Serial.println(DKA.pwm);
 }
 
 void pd(int a) {
@@ -237,22 +209,6 @@ void updateCMPS() {
   }
 }
 
-void Range() {
-  if (currentPOS.T <= range && stick.post == 'E') {
-    turnRight = false;
-  }
-  else if (currentPOS.T >= range && stick.post == 'M') {
-    turnLeft = false;
-  }
-  else if (currentPOS.T >= range && stick.post == 'N') {
-    turnLeft = false;
-  }
-  else if (currentPOS.T <= range && stick.post == 'O') {
-    turnRight = false;
-    heading = false;
-    manual = true;
-  }
-}
 
 void resetCMPS() {
   cmpSerial.write(0xA5);
@@ -267,4 +223,11 @@ void initCMPS() {
   cmpSerial.write(0x54);
   delay(1000);
   resetCMPS();
+}
+
+
+void goOdom(int x, int y, int t) {
+  while (odom) {
+    goXYT(x, y, t);
+  }
 }

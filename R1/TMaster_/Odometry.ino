@@ -2,6 +2,7 @@
 void updateOdometry() {
 
   // Temporary Position and Heading
+  updateCMPS();
   float
   _x, _y, _t,
 
@@ -58,6 +59,7 @@ void updateOdometry() {
   KI.lastPulse = currentLeftPC;
   KA.lastPulse = currentRightPC;
   BE.lastPulse = currentBackPC;
+
 }
 
 // Reset Odometry

@@ -130,6 +130,7 @@ bool turnRight = false;
 bool turnLeft = false;
 bool heading = true;
 bool manual = false;
+bool odom =  true;
 char param;
 int cek;
 float range;
@@ -147,30 +148,32 @@ void setup() {
   innt();
   initCMPS();
   Mode();
-  //  trialCMPS();
+  //      trialCMPS();
 }
 
 void loop() {
-  //    trialMotor(0,0,255,0, 0); //dka, bka, bki, dki, pd
+  //    trialMotor(70,700,70,70, 0); //dka, bka, bki, dki, pd
   //    trialMotorAll(); // on all of motor
   //    terialEnc(); // read pulse enc
   //    trialENC_ext();
   //    trialXYTEnc();
   //    trialRPM(20);
-  //    goXYT(0,0,45);
+  //    goXYT(0, 0, 45);
+  //    updateCMPS();
   //    trialOdometry();
-  //    Serial.println(currentPOS.T);
+
   //    updateCMPS();
   //    Serial.println(cmps.heading);
-  //  accelerometer();
-  //  gyroscope();
-  //  cekRange(-20);
+  //    accelerometer();
+  //    gyroscope();
+  //    cekRange(-20);
 
-  //  updateOdometry();
-  //  updateCMPS();
-  //  setRPM(30, 30, 30, 30);
-  //  goXYT(10, 0, 35);
+  //    updateCMPS();
+  //    setRPM(30, 30, 30, 30);
+  //    goXYT(0, 0, 35);
+  //    SetRPM(40,40,40,40);
 
+  //  RPM_BKI(40, 0.005, 0.025);
 
 
 }

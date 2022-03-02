@@ -1,4 +1,4 @@
-bool goXYT(int x, int y, int t) {
+void goXYT(int x, int y, int t) {
   // Kinematic Variable
   float
   s,      // Jarak
@@ -45,8 +45,8 @@ bool goXYT(int x, int y, int t) {
 
   // If target reach with optimal resolution
   if (s <= MIN_POS_RES && abs(dw) <= MIN_DEG_RES) {
-    setRPM(0, 0, 0, 0);
-    return true;
+    Stop();
+    odom = false;
   }
 
   if (s > MIN_POS_RES) {
@@ -75,6 +75,13 @@ bool goXYT(int x, int y, int t) {
   v2 = (w2 * 9.56 / 0.229) / (WHEEL_BASE / WHEEL_RADIUS);
   v3 = (w3 * 9.56 / 0.229) / (WHEEL_BASE / WHEEL_RADIUS);
   v4 = (w4 * 9.56 / 0.229) / (WHEEL_BASE / WHEEL_RADIUS);
+  
+  //  Serial.print("\t\t");
+  //  Serial.print(v2);
+  //  Serial.print("\t\t");
+  //  Serial.print(v3);
+  //  Serial.print("\t\t");
+  //  Serial.println(v4);
 
   /* NOTE: BETA ALGHORITHM */
 
@@ -112,10 +119,10 @@ bool goXYT(int x, int y, int t) {
   v4 *= -1;
 
   // atur RPM masing-masing slave
-  setRPM(v1, v2, v3, v4);
+  SetRPM(v1, v2, v3, v4);
 
   // Koordinat belum terpenuhi, return false
-  return false;
+  
 }
 
 void setRPM(int m1, int m2, int m3, int m4) {
@@ -145,7 +152,6 @@ void setRPM(int m1, int m2, int m3, int m4) {
   else if (m4 < -(RPM_SCALE))
     m4 = -(RPM_SCALE);
 
-
   // Rubah RPM menjadi RPM yang sebenarnya (Aktual)
   //abRPM = map(bRPM, 0, RPM_SCALE, 0, RPM_LIMIT);
   //arRPM = map(rRPM,0, RPM_SCALE, 0, RPM_LIMIT);
@@ -156,10 +162,17 @@ void setRPM(int m1, int m2, int m3, int m4) {
   abrRPM = round( (m3 / RPM_SCALE) * ((MOD_RPM / RPM_SCALE) * RPM_LIMIT) );
   afrRPM = round( (m4 / RPM_SCALE) * ((MOD_RPM / RPM_SCALE) * RPM_LIMIT) );
 
+  RPM_DKI(aflRPM, 0.01, 0.05); //ok
+  RPM_BKI(ablRPM, 0.01, 0.05); //ok
+  RPM_BKA(abrRPM, 0.01, 0.05); //ok
+  RPM_DKA(afrRPM, 0.01, 0.05); //ok
+
+
 #else
   aflRPM = m1;
   ablRPM = m2;
   abrRPM = m3;
   afrRPM = m4;
 #endif
+
 }

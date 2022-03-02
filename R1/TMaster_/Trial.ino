@@ -121,6 +121,14 @@ void trialRPM(int pwm) {
   RPM_BKI(pwm, 0.01, 0.05); //ok
 }
 
+
+void SetRPM(int v1, int v2, int v3, int v4) {
+  RPM_DKA(v1, 0.01, 0.05); //ok
+  RPM_DKI(v2, 0.01, 0.05); //ok
+  RPM_BKA(v3, 0.01, 0.05); //ok
+  RPM_BKI(v4, 0.01, 0.05); //ok
+}
+
 void trialOdometry() {
   while (1) {
     updateOdometry();
